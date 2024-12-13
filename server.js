@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 // MongoDB connection URL and database setup
 const mongoUri = "mongodb+srv://opennetworkglobal:YU0aAmLwy0QrbwO0@opennetwork.2wd60.mongodb.net/?retryWrites=true&w=majority&appName=OpenNetwork";
 const dbName = "yourDatabaseName"; // Replace with your database name
-const collectionName = "yourCollectionName"; // Replace with your collection name
+const collectionName = "data"; // Using "data" as the collection name
 
 // POST endpoint to receive data from ESP32
 app.post('/pushData', async (req, res) => {
@@ -22,33 +22,38 @@ app.post('/pushData', async (req, res) => {
     return res.status(400).send('Invalid data received');
   }
 
+  let client;
   try {
     // Connect to MongoDB
-    const client = new MongoClient(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
+    client = new MongoClient(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
     await client.connect();
+
     console.log("Connected to MongoDB");
 
     const db = client.db(dbName);
     const collection = db.collection(collectionName);
 
-    // Update the document in MongoDB
-    const filter = {}; // Define your filter criteria to select the correct document
+    // Ensure the document structure exists
+    const filter = { "_id": "lastIrrigation" }; // Unique identifier for this document
     const update = {
       $set: {
-        "data.lastIrrigation_data": data // Update the 'lastIrrigation_data' field with received data
+        "lastIrrigation_data": data // Update the 'lastIrrigation_data' field with received data
       }
     };
+    const options = { upsert: true }; // Create the document if it doesn't exist
 
-    const result = await collection.updateOne(filter, update);
+    const result = await collection.updateOne(filter, update, options);
     console.log(`Matched ${result.matchedCount} document(s) and modified ${result.modifiedCount} document(s)`);
-
-    await client.close();
 
     // Respond with a success message
     res.status(200).send('Data received and updated successfully');
   } catch (err) {
-    console.error('Error updating MongoDB:', err);
+    console.error('Error interacting with MongoDB:', err);
     res.status(500).send('Failed to update data');
+  } finally {
+    if (client) {
+      await client.close();
+    }
   }
 });
 
