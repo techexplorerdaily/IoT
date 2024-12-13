@@ -33,7 +33,10 @@ app.post('/pushData', async (req, res) => {
     const db = client.db(dbName);
     const collection = db.collection(collectionName);
 
-    // Ensure the document structure exists
+    // Define a filter for the document (you can adjust this depending on your needs)
+    const filter = { sensorId: data.sensorId }; // Assuming 'sensorId' is a unique identifier in your data
+
+    // Ensure the document structure exists and update
     const update = {
       $set: {
         data // Update the 'lastIrrigation_data' field with received data
