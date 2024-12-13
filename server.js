@@ -34,10 +34,9 @@ app.post('/pushData', async (req, res) => {
     const collection = db.collection(collectionName);
 
     // Ensure the document structure exists
-    const filter = { "_id": "lastIrrigation" }; // Unique identifier for this document
     const update = {
       $set: {
-        "lastIrrigation_data": data // Update the 'lastIrrigation_data' field with received data
+        data // Update the 'lastIrrigation_data' field with received data
       }
     };
     const options = { upsert: true }; // Create the document if it doesn't exist
