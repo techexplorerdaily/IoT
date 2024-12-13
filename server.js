@@ -10,8 +10,8 @@ app.use(bodyParser.json());
 
 // MongoDB connection URL and database setup
 const mongoUri = "mongodb+srv://opennetworkglobal:YU0aAmLwy0QrbwO0@opennetwork.2wd60.mongodb.net/?retryWrites=true&w=majority&appName=OpenNetwork";
-const dbName = "yourDatabaseName"; // Replace with your database name
-const collectionName = "data"; // Using "data" as the collection name
+const dbName = "Data"; // Replace with your database name
+const collectionName = "lastIrrigation_data"; // Using "data" as the collection name
 
 // POST endpoint to receive data from ESP32
 app.post('/pushData', async (req, res) => {
